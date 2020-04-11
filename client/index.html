@@ -5,10 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+    <base href="/">
+    <link rel="stylesheet" href="/client/styles.css">
+    
 </head>
 <body>
+    <canvas width="500" height="500" id="canvas"></canvas>
 
-    <h1>Hello!</h1>
+    <script>
+            let can = document.getElementById("canvas")
+            let ctx = can.getContext("2d")
+            let width = can.width
+            let height = can.height
+            var socket = io();
+            let s = Math.random()
+            let happy = function(){
+                socket.emit("happy", {
+                reason:"why not?" + s
+            })}
     
+            socket.on("newPosition", (data) => {
+                ctx.clearRect(0,0,can.width,can.height)
+                ctx.fillStyle = "black"
+                ctx.fillRect(0,0,width,height)
+                ctx.fillStyle = "yellow"
+                ctx.fillText("P", data.x, data.y)
+            })
+        </script>
 </body>
 </html>
