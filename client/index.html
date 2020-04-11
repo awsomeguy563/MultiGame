@@ -25,12 +25,15 @@
                 reason:"why not?" + s
             })}
     
-            socket.on("newPosition", (data) => {
+            socket.on("newPositions", (data) => {
                 ctx.clearRect(0,0,can.width,can.height)
                 ctx.fillStyle = "black"
                 ctx.fillRect(0,0,width,height)
-                ctx.fillStyle = "yellow"
-                ctx.fillText("P", data.x, data.y)
+                console.log(data)
+                for(let i in data){
+                    ctx.fillStyle = "yellow"
+                    ctx.fillText(data[i].num, data[i].x, data[i].y)
+                }
             })
         </script>
 </body>

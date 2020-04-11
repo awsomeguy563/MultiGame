@@ -16,20 +16,31 @@ let socketList = []
 let io = require("socket.io")(serv,{})
 io.sockets.on("connection", function(socket){
     console.log("socket connection: ")
-    let socketID = Math.random()
+    socket.ID = Math.random()
     socket.x = 0
     socket.y = 0
-    socketList[socketID] = socket
+    socket.num = Math.floor(Math.random() * 10)
+    socketList[socket.ID] = socket
+
+    socket.on("disconnect", () => {
+        delete socketList[socket.ID]
+    })
 })
 
 setInterval(function(){
+    let pack = []
     for(let i in socketList){
         let socket = socketList[i]
         socket.x++
         socket.y++
-        socket.emit("newPosition", {
+        pack.push({
             x: socket.x,
-            y: socket.y
+            y: socket.y,
+            num: socket.num
         })
+    }
+    for(let i in socketList){
+        let socket = socketList[i]
+        socket.emit("newPositions", pack)
     }
 }, 1000/30)
