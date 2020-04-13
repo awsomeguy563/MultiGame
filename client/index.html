@@ -35,6 +35,33 @@
                     ctx.fillText(data[i].num, data[i].x, data[i].y)
                 }
             })
+
+            function keydown(evt){
+                console.log("sdfs")
+                if(evt.keyCode == 68){
+                    socket.emit("keyPress", {inputID: "right", state:true})
+                }else if(evt.keyCode == 83){
+                    socket.emit("keyPress", {inputID: "down", state:true})
+                }else if(evt.keyCode == 65){
+                    socket.emit("keyPress", {inputID: "left", state:true})
+                }else if(evt.keyCode == 87){
+                    socket.emit("keyPress", {inputID: "up", state:true})
+                }
+            }
+            can.addEventListener("keydown", keydown);
+
+            function keyup(evt){
+                if(evt.keyCode == 68){
+                    socket.emit("keyPress", {inputID: "right", state:false})
+                }else if(evt.keyCode == 83){
+                    socket.emit("keyPress", {inputID: "down", state:false})
+                }else if(evt.keyCode == 65){
+                    socket.emit("keyPress", {inputID: "left", state:false})
+                }else if(evt.keyCode == 87){
+                    socket.emit("keyPress", {inputID: "up", state:false})
+                }
+            }
+            can.addEventListener("keyup", keyup);
         </script>
 </body>
 </html>
