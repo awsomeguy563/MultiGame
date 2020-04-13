@@ -1,7 +1,7 @@
 let express = require("express")
 let app = express()
 let serv = require("http").createServer(app)
-port = 3000
+port = process.env.PORT || 3000
 
 
 app.get("/", function(req, res){
