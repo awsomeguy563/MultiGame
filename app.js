@@ -4,6 +4,13 @@ let serv = require("http").createServer(app)
 port = process.env.PORT || 3000
 
 
+/*
+    Client priority multiplayer gaming experience
+    Everyone else is laggy, you'r not
+    This is in contrast to everyone lags due to server connection, the load is now only on others positions
+*/
+
+
 app.get("/", function(req, res){
     res.sendFile(__dirname + "/client/index.html")
 })
