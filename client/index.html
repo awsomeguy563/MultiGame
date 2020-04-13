@@ -37,16 +37,16 @@
                 }
 
                 updatePosition(){
-                    if(this.pressingRight){
+                    if(this.pressingRight && !(this.x + 20 > width)){
                         this.x += this.maxspeed
                     }
-                    if(this.pressingLeft){
+                    if(this.pressingLeft && !(this.x - 20 < 0)){
                         this.x -= this.maxspeed
                     }
-                    if(this.pressingUp){
+                    if(this.pressingUp && !(this.y + 20 > height)){
                         this.y += this.maxspeed
                     }
-                    if(this.pressingDown){
+                    if(this.pressingDown && !(this.y - 20 < 0)){
                         this.y -= this.maxspeed
                     }
                 }
