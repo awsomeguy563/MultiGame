@@ -21,6 +21,7 @@
             let socket = io();
 
             let otherPlayerList = []
+            let latency = 0
 
             class Player{
                 constructor(){
@@ -89,6 +90,12 @@
             
             let fps = 60
 
+            function showLatency(ping){
+                ctx.fillStyle = "white"
+                ctx.font = "20px Arial";
+                ctx.fillText("Ping: " + ping, 20, width - 20)
+            }
+
 
             setInterval(function(){
                 ctx.clearRect(0,0,can.width,can.height)
@@ -97,12 +104,19 @@
                 currPlayer.updatePosition()
                 currPlayer.draw()
                 otherPlayersDraw()
+                startTime = Date.now();
+                socket.emit('ping');
+                showLatency(latency)
                 socket.emit("myPosition", {
                     id: currPlayer.id,
                     x: currPlayer.x,
                     y: currPlayer.y
                 })
             }, 1000/fps)
+
+            socket.on('pong', function() {
+                latency = (Date.now() - startTime)/2;
+            });
     
             socket.on("allPlayerPos", (data) => {
                 for(let i in data){
