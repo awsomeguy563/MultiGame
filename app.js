@@ -14,78 +14,45 @@ serv.listen(port, () => console.log("connection"))
 let socketList = []
 let playerList = []
 
-class Player{
-    constructor(id){
-        this.x = 250
-        this.y = 250
-        this.id = id
-        this.num = Math.floor(Math.random() * 10)
-        this.pressingRight = false
-        this.pressingLeft = false
-        this.pressingDown = false
-        this.pressingUp = false
-        this.maxspeed = 5
-    }
-
-    updatePosition(){
-        if(this.pressingRight){
-            this.x += this.maxspeed
-        }
-        if(this.pressingLeft){
-            this.x -= this.maxspeed
-        }
-        if(this.pressingUp){
-            this.y += this.maxspeed
-        }
-        if(this.pressingDown){
-            this.y -= this.maxspeed
-        }
-    }
-}
 
 let io = require("socket.io")(serv,{})
 io.sockets.on("connection", function(socket){
     console.log("socket connection: ")
     socket.ID = Math.random()
-    socket.x = 0
-    socket.y = 0
-    socket.num = Math.floor(Math.random() * 10)
-
     socketList[socket.ID] = socket
-    let player = new Player(socket.ID)
-    playerList[socket.ID] = player
 
     socket.on("disconnect", () => {
         delete socketList[socket.ID]
         delete playerList[socket.ID]
     })
 
-    socket.on("keyPress", (data) => {
-        if(data.inputID == "left"){
-            player.pressingLeft = data.state
-        }else if(data.inputID == "right"){
-            player.pressingRight = data.state
-        }else if(data.inputID == "up"){
-            player.pressingUp = data.state
-        }else if(data.inputID == "down"){
-            player.pressingDown = data.state
+    socket.emit("playerInitializationID", {
+        id: socket.ID
+    })
+
+    socket.on("playerInitialization", (data)=>{
+        playerList[socket.ID] = data.player
+        playerList[socket.ID].id = socket.ID
+        console.log(playerList)
+    })
+
+    socket.on("myPosition", (data) => {
+        if(playerList[data.id]){
+            playerList[data.id].x = data.x
+            playerList[data.id].y = data.y
         }
     })
+
 })
 
 setInterval(function(){
     let pack = []
     for(let i in playerList){
         let player = playerList[i]
-        player.updatePosition()
-        pack.push({
-            x: player.x,
-            y: player.y,
-            num: player.num
-        })
+        pack.push(player)
     }
     for(let i in socketList){
         let socket = socketList[i]
-        socket.emit("newPositions", pack)
+        socket.emit("allPlayerPos", pack)
     }
 }, 1000/60)

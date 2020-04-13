@@ -18,57 +18,131 @@
             let ctx = can.getContext("2d")
             let width = can.width
             let height = can.height
-            var socket = io();
-            let s = Math.random()
-            let x = 250
-            let y = 250
-            let num = Math.floor(Math.random() * 10)
+            let socket = io();
+
+            let otherPlayerList = []
+
+            class Player{
+                constructor(){
+                    this.x = 250
+                    this.y = 250
+                    this.id = 0
+                    this.num = Math.floor(Math.random() * 10)
+                    this.pressingRight = false
+                    this.pressingLeft = false
+                    this.pressingDown = false
+                    this.pressingUp = false
+                    this.maxspeed = 5
+                }
+
+                updatePosition(){
+                    if(this.pressingRight){
+                        this.x += this.maxspeed
+                    }
+                    if(this.pressingLeft){
+                        this.x -= this.maxspeed
+                    }
+                    if(this.pressingUp){
+                        this.y += this.maxspeed
+                    }
+                    if(this.pressingDown){
+                        this.y -= this.maxspeed
+                    }
+                }
+
+                draw(){
+                    ctx.fillStyle = "yellow"
+                    ctx.beginPath()
+                    ctx.arc(this.x, this.y, 20, 0, 2 * Math.PI, false)
+                    ctx.stroke()
+                    ctx.fill()
+                    ctx.fillStyle = "black"
+                    ctx.font = "30px Arial";
+                    ctx.fillText(this.num, this.x - 7, this.y + 10)
+                }
+            }
+
+            function otherPlayersDraw(){
+                for(let i in otherPlayerList){
+                    ctx.fillStyle = "yellow"
+                    ctx.beginPath()
+                    ctx.arc(otherPlayerList[i].x , otherPlayerList[i].y, 20, 0, 2 * Math.PI, false)
+                    ctx.stroke()
+                    ctx.fill()
+                    ctx.fillStyle = "black"
+                    ctx.font = "30px Arial";
+                    ctx.fillText(otherPlayerList[i].num, otherPlayerList[i].x - 7, otherPlayerList[i].y + 10)
+                }
+            }
+
             
-            let happy = function(){
-                socket.emit("happy", {
-                reason:"why not?" + s
-            })}
-    
-            socket.on("newPositions", (data) => {
+            currPlayer = new Player()
+
+            socket.on("playerInitializationID", (data) => {
+                console.log(data.id)
+                currPlayer.id = data.id
+            })
+
+            socket.emit("playerInitialization", {
+                player: currPlayer
+            })
+            
+            
+            let fps = 60
+
+
+            setInterval(function(){
                 ctx.clearRect(0,0,can.width,can.height)
                 ctx.fillStyle = "black"
                 ctx.fillRect(0,0,width,height)
+                currPlayer.updatePosition()
+                currPlayer.draw()
+                otherPlayersDraw()
+                socket.emit("myPosition", {
+                    id: currPlayer.id,
+                    x: currPlayer.x,
+                    y: currPlayer.y
+                })
+            }, 1000/fps)
+    
+            socket.on("allPlayerPos", (data) => {
                 for(let i in data){
-                    ctx.fillStyle = "yellow"
-                    ctx.beginPath()
-                    ctx.arc(data[i].x, data[i].y, 20, 0, 2 * Math.PI, false)
-                    ctx.stroke()
-                    ctx.fill()
-
-                    ctx.fillStyle = "black"
-                    ctx.font = "30px Arial";
-                    ctx.fillText(data[i].num, data[i].x - 7, data[i].y + 10)
+                    if(currPlayer.id != data[i].id){
+                        if(otherPlayerList[data[i].id]){
+                            otherPlayerList[data[i].id].x = data[i].x,
+                            otherPlayerList[data[i].id].y = data[i].y
+                        }else{
+                            otherPlayerList[data[i].id] = data[i]
+                            otherPlayerList[data[i].id].x = data[i].x
+                            otherPlayerList[data[i].id].y = data[i].y
+                        }
+                    }
                 }
             })
 
             function keydown(evt){
                 console.log(evt)
                 if(evt.keyCode == 68){
-                    socket.emit("keyPress", {inputID: "right", state:true})
+                    currPlayer.pressingRight = true
                 }else if(evt.keyCode == 87){
-                    socket.emit("keyPress", {inputID: "down", state:true})
+                    currPlayer.pressingDown = true
                 }else if(evt.keyCode == 65){
-                    socket.emit("keyPress", {inputID: "left", state:true})
+                    currPlayer.pressingLeft = true
                 }else if(evt.keyCode == 83){
-                    socket.emit("keyPress", {inputID: "up", state:true})
+                    currPlayer.pressingUp = true
                 }
             }
             document.addEventListener("keydown", keydown);
 
             function keyup(evt){
                 if(evt.keyCode == 68){
-                    socket.emit("keyPress", {inputID: "right", state:false})
+                    currPlayer.pressingRight = false
                 }else if(evt.keyCode == 87){
-                    socket.emit("keyPress", {inputID: "down", state:false})
+                    currPlayer.pressingDown = false
                 }else if(evt.keyCode == 65){
-                    socket.emit("keyPress", {inputID: "left", state:false})
+                    currPlayer.pressingLeft = false
                 }else if(evt.keyCode == 83){
-                    socket.emit("keyPress", {inputID: "up", state:false})
+                    currPlayer.pressingUp = false
                 }
             }
             document.addEventListener("keyup", keyup);
