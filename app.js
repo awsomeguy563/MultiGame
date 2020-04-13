@@ -31,6 +31,12 @@ io.sockets.on("connection", function(socket){
     socket.on("disconnect", () => {
         delete socketList[socket.ID]
         delete playerList[socket.ID]
+        for(let i in socketList){
+            let so = socketList[i]
+            so.emit("playerDisconnect",{
+                id: socket.ID
+            })
+        }
     })
 
     socket.emit("playerInitializationID", {
@@ -40,7 +46,6 @@ io.sockets.on("connection", function(socket){
     socket.on("playerInitialization", (data)=>{
         playerList[socket.ID] = data.player
         playerList[socket.ID].id = socket.ID
-        console.log(playerList)
     })
 
     socket.on("myPosition", (data) => {
