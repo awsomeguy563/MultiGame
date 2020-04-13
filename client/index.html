@@ -20,6 +20,10 @@
             let height = can.height
             var socket = io();
             let s = Math.random()
+            let x = 250
+            let y = 250
+            let num = Math.floor(Math.random() * 10)
+            
             let happy = function(){
                 socket.emit("happy", {
                 reason:"why not?" + s
@@ -39,7 +43,6 @@
                     ctx.fillStyle = "black"
                     ctx.font = "30px Arial";
                     ctx.fillText(data[i].num, data[i].x - 7, data[i].y + 10)
-                    
                 }
             })
 
