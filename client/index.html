@@ -29,39 +29,46 @@
                 ctx.clearRect(0,0,can.width,can.height)
                 ctx.fillStyle = "black"
                 ctx.fillRect(0,0,width,height)
-                console.log(data)
                 for(let i in data){
                     ctx.fillStyle = "yellow"
-                    ctx.fillText(data[i].num, data[i].x, data[i].y)
+                    ctx.beginPath()
+                    ctx.arc(data[i].x, data[i].y, 20, 0, 2 * Math.PI, false)
+                    ctx.stroke()
+                    ctx.fill()
+
+                    ctx.fillStyle = "black"
+                    ctx.font = "30px Arial";
+                    ctx.fillText(data[i].num, data[i].x - 7, data[i].y + 10)
+                    
                 }
             })
 
             function keydown(evt){
-                console.log("sdfs")
+                console.log(evt)
                 if(evt.keyCode == 68){
                     socket.emit("keyPress", {inputID: "right", state:true})
-                }else if(evt.keyCode == 83){
+                }else if(evt.keyCode == 87){
                     socket.emit("keyPress", {inputID: "down", state:true})
                 }else if(evt.keyCode == 65){
                     socket.emit("keyPress", {inputID: "left", state:true})
-                }else if(evt.keyCode == 87){
+                }else if(evt.keyCode == 83){
                     socket.emit("keyPress", {inputID: "up", state:true})
                 }
             }
-            can.addEventListener("keydown", keydown);
+            document.addEventListener("keydown", keydown);
 
             function keyup(evt){
                 if(evt.keyCode == 68){
                     socket.emit("keyPress", {inputID: "right", state:false})
-                }else if(evt.keyCode == 83){
+                }else if(evt.keyCode == 87){
                     socket.emit("keyPress", {inputID: "down", state:false})
                 }else if(evt.keyCode == 65){
                     socket.emit("keyPress", {inputID: "left", state:false})
-                }else if(evt.keyCode == 87){
+                }else if(evt.keyCode == 83){
                     socket.emit("keyPress", {inputID: "up", state:false})
                 }
             }
-            can.addEventListener("keyup", keyup);
+            document.addEventListener("keyup", keyup);
         </script>
 </body>
 </html>

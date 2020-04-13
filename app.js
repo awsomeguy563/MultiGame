@@ -24,7 +24,7 @@ class Player{
         this.pressingLeft = false
         this.pressingDown = false
         this.pressingUp = false
-        this.maxspeed = 10
+        this.maxspeed = 5
     }
 
     updatePosition(){
@@ -60,11 +60,11 @@ io.sockets.on("connection", function(socket){
         delete playerList[socket.ID]
     })
 
-    socket.on("keypress", (data) => {
+    socket.on("keyPress", (data) => {
         if(data.inputID == "left"){
             player.pressingLeft = data.state
         }else if(data.inputID == "right"){
-            player.pressingRighy = data.state
+            player.pressingRight = data.state
         }else if(data.inputID == "up"){
             player.pressingUp = data.state
         }else if(data.inputID == "down"){
@@ -88,4 +88,4 @@ setInterval(function(){
         let socket = socketList[i]
         socket.emit("newPositions", pack)
     }
-}, 1000/30)
+}, 1000/60)
