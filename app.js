@@ -62,6 +62,7 @@ io.sockets.on("connection", function(socket){
 })
 
 setInterval(function(){
+    startTime = Date.now();
     let pack = []
     for(let i in playerList){
         let player = playerList[i]
@@ -69,6 +70,9 @@ setInterval(function(){
     }
     for(let i in socketList){
         let socket = socketList[i]
-        socket.emit("allPlayerPos", pack)
+        socket.emit("allPlayerPos", {
+            pack: pack,
+            startTime: startTime
+        })
     }
 }, 1000/60)

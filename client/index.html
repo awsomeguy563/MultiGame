@@ -106,7 +106,6 @@
                 ctx.fillRect(0,0,width,height)
                 currPlayer.updatePosition()
                 currPlayer.draw()
-                startTime = Date.now();
                 otherPlayersDraw()
                 showLatency(latency)
                 socket.emit("myPosition", {
@@ -122,16 +121,17 @@
 
     
             socket.on("allPlayerPos", (data) => {
-                time = Date.now() - startTime;
-                for(let i in data){
-                    if(currPlayer.id != data[i].id){
-                        if(otherPlayerList[data[i].id]){
-                            otherPlayerList[data[i].id].x = data[i].x,
-                            otherPlayerList[data[i].id].y = data[i].y
+                time = Date.now() - data.startTime;
+                let list = data.pack
+                for(let i in list){
+                    if(currPlayer.id != list[i].id){
+                        if(otherPlayerList[list[i].id]){
+                            otherPlayerList[list[i].id].x = list[i].x,
+                            otherPlayerList[list[i].id].y = list[i].y
                         }else{
-                            otherPlayerList[data[i].id] = data[i]
-                            otherPlayerList[data[i].id].x = data[i].x
-                            otherPlayerList[data[i].id].y = data[i].y
+                            otherPlayerList[list[i].id] = list[i]
+                            otherPlayerList[list[i].id].x = list[i].x
+                            otherPlayerList[list[i].id].y = list[i].y
                         }
                     }
                 }
