@@ -91,6 +91,9 @@
             let fps = 60
 
             function showLatency(ping){
+                if(ping == 0){
+                    ping = "Not available"
+                }
                 ctx.fillStyle = "white"
                 ctx.font = "20px Arial";
                 ctx.fillText("Ping: " + ping, 20, width - 20)
@@ -103,9 +106,8 @@
                 ctx.fillRect(0,0,width,height)
                 currPlayer.updatePosition()
                 currPlayer.draw()
-                otherPlayersDraw()
                 startTime = Date.now();
-                socket.emit('ping');
+                otherPlayersDraw()
                 showLatency(latency)
                 socket.emit("myPosition", {
                     id: currPlayer.id,
@@ -114,11 +116,13 @@
                 })
             }, 1000/fps)
 
-            socket.on('pong', function() {
-                latency = (Date.now() - startTime)/2;
-            });
+            setInterval(() => {
+                latency = time
+            }, 1000/2)
+
     
             socket.on("allPlayerPos", (data) => {
+                time = Date.now() - startTime;
                 for(let i in data){
                     if(currPlayer.id != data[i].id){
                         if(otherPlayerList[data[i].id]){
