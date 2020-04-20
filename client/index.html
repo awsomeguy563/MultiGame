@@ -27,7 +27,10 @@
     </script>
     <div id="chat">
         <div id="chat-text" style="width:300px;height:650px;overflow-y:scroll">
-            <div>Hello!</div>
+            <div style="color:grey"> >>Move with 'WASD'</div>
+            <div style="color:grey"> >>Red squares = 1pt, Green squares = 5pts</div>
+            <div style="color:grey"> >>Try to get the highest streak!</div>
+            <div style="color:grey"> >>ChatRoom: Type away!</div>
         </div>
         <form id="chat-form">
             <input id="chat-input" type="text" style="width:300px" onfocus="handleOnFocus(this)" onblur="handleOnBlur()"></input>
@@ -127,6 +130,12 @@
                 }
             }
 
+            function showPlayerNum(){
+                ctx.fillStyle = "white"
+                ctx.font = "20px Arial";
+                ctx.fillText("Your num: " + currPlayer.num, width - (100 + streak.toString().length * 20), 20)
+            }
+
             function shapeGame(normRects, specRects){
                 for(let i in normRects){
                     ctx.fillStyle = "brown"
@@ -193,6 +202,7 @@
                 otherPlayersDraw()
                 showLatency(latency)
                 showStreak(streak)
+                showPlayerNum()
                 socket.emit("myPosition", {
                     id: currPlayer.id,
                     x: currPlayer.x,

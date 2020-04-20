@@ -103,11 +103,14 @@ setInterval(function(){
     let normrecs = []
     specrecsnum = Math.floor(Math.random() * 4) + 1
     normrecsnum = Math.floor(Math.random() * 4) + 1
+    sh = 30
+    nh = 60
+
     for(let i =0; i < specrecsnum; i++){
-        specrecs.push([Math.random() * (width-50 - 50) + 50, Math.random() * (height-50 - 50) + 50, 50])
+        specrecs.push([Math.random() * (width-sh - sh) + sh, Math.random() * (height-sh - sh) + sh, sh])
     }
     for(let i =0; i < normrecsnum; i++){
-        normrecs.push([Math.random() * (width-80 - 80) + 80, Math.random() * (height-80 - 80) + 80, 80])
+        normrecs.push([Math.random() * (width-nh - nh) + nh, Math.random() * (height-nh - nh) + nh, nh])
     }
     for(let i in socketList){
         let socket = socketList[i]
