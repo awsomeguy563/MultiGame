@@ -29,7 +29,7 @@
         <div id="chat-text" style="width:300px;height:650px;overflow-y:scroll">
             <div style="color:grey"> >>Move with 'WASD'</div>
             <div style="color:grey"> >>Red squares = 1pt, Green squares = 5pts</div>
-            <div style="color:grey"> >>Set Traps with spacebar, careful not to step in yours!</div>
+            <div style="color:grey"> >>Set traps with spacebar, careful not to step on yours!</div>
             <div style="color:grey"> >>Try to get the highest streak!</div>
             <div style="color:grey"> >>ChatRoom: Type away!</div>
         </div>
@@ -154,7 +154,7 @@
                 if(currPlayer.setTrap){
                     ctx.fillStyle = "red"
                     ctx.beginPath()
-                    ctx.fillRect(currPlayer.trap[0], currPlayer.trap[1], 5, 5)
+                    ctx.fillRect(currPlayer.trap[0], currPlayer.trap[1], 10, 10)
                     ctx.closePath()
                 }
             }
@@ -216,7 +216,7 @@
                 for(let i in traps){
                     ctx.fillStyle = "red"
                     ctx.beginPath()
-                    ctx.fillRect(traps[i][0], traps[i][1], 5, 5)
+                    ctx.fillRect(traps[i][0], traps[i][1], 10, 10)
                     ctx.closePath()
                 }
             }
