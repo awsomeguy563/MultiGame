@@ -224,6 +224,7 @@
 
             socket.on("addToChat", (data) => {
                 chatText.innerHTML += '<div>' + data + '<div>'
+                chatText.scrollTop = chatText.scrollHeight;
             })
 
             chatForm.onsubmit = function(e){
