@@ -11,10 +11,22 @@
     
 </head>
 <body>
+    <div id="chat">
+        <div id="chat-text" style="width:200px;height:700px;overflow-y:scroll">
+            <div>Hello!</div>
+        </div>
+        <form id="chat-form">
+            <input id="chat-input" type="text" style="width:200px"></input>
+        </form>
+   </div>
+
     <canvas width="1000" height="700" id="canvas"></canvas>
 
     <script>
 
+            let chatText = document.getElementById("chat-text")
+            let chatForm = document.getElementById("chat-form")
+            let chatInput= document.getElementById("chat-input")
             let can = document.getElementById("canvas")
             let ctx = can.getContext("2d")
             let width = can.width
@@ -202,6 +214,16 @@
             socket.on("playerDisconnect", (data) => {
                 delete otherPlayerList[data.id]
             })
+
+            socket.on("addToChat", (data) => {
+                chatText.innerHTML += '<div>' + data + '<div>'
+            })
+
+            chatForm.onsubmit = function(e){
+                e.preventDefault()
+                socket.emit("sendMsg", chatInput.value)
+                chatInput.value = ""
+            }
 
             function keydown(evt){
                 console.log(evt)

@@ -61,6 +61,14 @@ io.sockets.on("connection", function(socket){
         socket.emit('pong');
     });
 
+    socket.on("sendMsg", function(data){
+        let playerName = ("" + socket.id).slice(2,7)
+        for(let i in socketList){
+            let socket = socketList[i]
+            socket.emit("addToChat", playerName + ": " + data)
+        }
+    })
+
 })
 
 setInterval(function(){
