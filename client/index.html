@@ -11,16 +11,30 @@
     
 </head>
 <body>
+    <script>
+        let textFieldInFocus
+        //forms ease of use
+        function handleOnFocus(form_element)
+        {
+            textFieldInFocus = form_element;
+            console.log(form_element)
+        }
+        function handleOnBlur()
+        {
+            textFieldInFocus = null;
+        }
+
+    </script>
     <div id="chat">
         <div id="chat-text" style="width:300px;height:650px;overflow-y:scroll">
             <div>Hello!</div>
         </div>
         <form id="chat-form">
-            <input id="chat-input" type="text" style="width:300px"></input>
+            <input id="chat-input" type="text" style="width:300px" onfocus="handleOnFocus(this)" onblur="handleOnBlur()"></input>
         </form>
         <form id="username-form">
                 Enter a username: 
-                <input id="username-input" type="text" style="width:100px"></input>
+                <input id="username-input" type="text" style="width:100px" onfocus="handleOnFocus(this)" onblur="handleOnBlur()"></input>
         </form>
    </div>
 
@@ -33,12 +47,16 @@
             let chatInput= document.getElementById("chat-input")
             let usernameForm = document.getElementById("username-form")
             let usernameInput= document.getElementById("username-input")
+
+
             let username;
             let can = document.getElementById("canvas")
             let ctx = can.getContext("2d")
             let width = can.width
             let height = can.height
             let socket = io();
+
+
 
             let otherPlayerList = []
             let latency = 0
@@ -243,15 +261,16 @@
             }
 
             function keydown(evt){
-                console.log(evt)
-                if(evt.keyCode == 68){
-                    currPlayer.pressingRight = true
-                }else if(evt.keyCode == 87){
-                    currPlayer.pressingDown = true
-                }else if(evt.keyCode == 65){
-                    currPlayer.pressingLeft = true
-                }else if(evt.keyCode == 83){
-                    currPlayer.pressingUp = true
+                if(!textFieldInFocus){
+                    if(evt.keyCode == 68){
+                        currPlayer.pressingRight = true
+                    }else if(evt.keyCode == 87){
+                        currPlayer.pressingDown = true
+                    }else if(evt.keyCode == 65){
+                        currPlayer.pressingLeft = true
+                    }else if(evt.keyCode == 83){
+                        currPlayer.pressingUp = true
+                    }
                 }
             }
             document.addEventListener("keydown", keydown);
