@@ -22,6 +22,8 @@ let socketList = []
 let playerList = []
 
 
+
+
 let io = require("socket.io")(serv,{})
 io.sockets.on("connection", function(socket){
     console.log("socket connection: ")
@@ -76,3 +78,38 @@ setInterval(function(){
         })
     }
 }, 1000/60)
+
+
+//game part of the server
+//can height and width defined here
+let height = 700
+let width = 1000
+
+
+
+setInterval(function(){
+    let shape = []
+        shape.push([
+            Math.floor(Math.random() * (width/2)),
+            Math.floor(Math.random() * (height/2))
+        ])
+        shape.push([
+            Math.floor(Math.random() * (width/2) + (width/2)),
+            Math.floor(Math.random() * (height/2))
+        ])
+        shape.push([
+            Math.floor(Math.random() * (width/2) + (width/2)),
+            Math.floor(Math.random() * (height/2) + (height/2))
+        ])
+        shape.push([
+            Math.floor(Math.random() * (width/2)),
+            Math.floor(Math.random() * (height/2) + (height/2))
+        ])
+        for(let i in socketList){
+            let socket = socketList[i]
+            socket.emit("shapeOn", {
+                shape: shape,
+                game: true
+            })
+        }
+}, 5000)

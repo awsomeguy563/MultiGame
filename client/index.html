@@ -11,9 +11,10 @@
     
 </head>
 <body>
-    <canvas width="500" height="500" id="canvas"></canvas>
+    <canvas width="1000" height="700" id="canvas"></canvas>
 
     <script>
+
             let can = document.getElementById("canvas")
             let ctx = can.getContext("2d")
             let width = can.width
@@ -22,6 +23,28 @@
 
             let otherPlayerList = []
             let latency = 0
+
+            //game vars and helpers
+            let shape = []
+            let streak = 0
+            let randColor = '#'+Math.floor(Math.random()*16777215).toString(16);
+            let randColor2 = '#'+Math.floor(Math.random()*16777215).toString(16);
+            function inside(point, vs) {
+                // ray-casting algorithm based on
+                // http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html
+                var x = point[0], y = point[1];
+                var inside = false;
+                for (var i = 0, j = vs.length - 1; i < vs.length; j = i++) {
+                    var xi = vs[i][0], yi = vs[i][1];
+                    var xj = vs[j][0], yj = vs[j][1];
+
+                    var intersect = ((yi > y) != (yj > y))
+                        && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+                    if (intersect) inside = !inside;
+                }
+                return inside;
+            };
+
 
             class Player{
                 constructor(){
@@ -76,6 +99,22 @@
                 }
             }
 
+            function shapeGame(shape){
+                ctx.strokeStyle = randColor2
+                ctx.fillStyle = randColor
+                ctx.lineWidth = 10;
+                ctx.beginPath()
+                ctx.moveTo(shape[0][0],shape[0][1])
+                for(let i =1; i < 3; i++){
+                    ctx.lineTo(shape[i+1][0],shape[i+1][1])
+                    ctx.stroke()
+                }
+                ctx.lineTo(shape[0][0],shape[0][1])
+                ctx.stroke()
+                ctx.closePath()
+                ctx.fill()
+            }
+
             
             currPlayer = new Player()
 
@@ -87,6 +126,7 @@
             socket.emit("playerInitialization", {
                 player: currPlayer
             })
+
             
             let fps = 60
 
@@ -96,7 +136,13 @@
                 }
                 ctx.fillStyle = "white"
                 ctx.font = "20px Arial";
-                ctx.fillText("Ping: " + ping, 20, width - 20)
+                ctx.fillText("Ping: " + ping, 20, height - 20)
+            }
+
+            function showStreak(streak){
+                ctx.fillStyle = "white"
+                ctx.font = "20px Arial";
+                ctx.fillText("Streak: " + streak, width - (100 + streak.toString().length * 20), height - 20)
             }
 
 
@@ -104,10 +150,14 @@
                 ctx.clearRect(0,0,can.width,can.height)
                 ctx.fillStyle = "black"
                 ctx.fillRect(0,0,width,height)
+                if(shape.length != 0){
+                    shapeGame(shape)
+                }
                 currPlayer.updatePosition()
                 currPlayer.draw()
                 otherPlayersDraw()
                 showLatency(latency)
+                showStreak(streak)
                 socket.emit("myPosition", {
                     id: currPlayer.id,
                     x: currPlayer.x,
@@ -135,6 +185,18 @@
                         }
                     }
                 }
+            })
+
+            //game
+            socket.on("shapeOn", (data) => {
+                randColor = '#'+Math.floor(Math.random()*16777215).toString(16);
+                randColor2 = '#'+Math.floor(Math.random()*16777215).toString(16); 
+                if(inside([currPlayer.x, currPlayer.y], shape)){
+                    streak += 1
+                }else{
+                    streak = 0
+                }
+                shape = data.shape
             })
 
             socket.on("playerDisconnect", (data) => {
