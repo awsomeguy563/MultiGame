@@ -65,6 +65,7 @@
             let latency = 0
 
             //game vars and helpers
+            let traps = []
             let normRects = []
             let specRects = []
             let streak = 0
@@ -88,6 +89,8 @@
                     this.pressingDown = false
                     this.pressingUp = false
                     this.maxspeed = 5
+                    this.trapSet = false
+                    this.trap = []
                 }
 
                 updatePosition(){
@@ -115,6 +118,16 @@
                     ctx.font = "30px Arial";
                     ctx.fillText(this.num, this.x - 7, this.y + 10)
                 }
+
+                setTrap(){
+                    if(this.trapSet == false){
+                        this.trap = [currPlayer.x, currPlayer.y]
+                        this.trapSet = true
+                        socket.emit("trapSet", {
+                            trap: currPlayer.trap
+                        })
+                    }
+                }
             }
 
             function otherPlayersDraw(){
@@ -134,6 +147,15 @@
                 ctx.fillStyle = "white"
                 ctx.font = "20px Arial";
                 ctx.fillText("Your num: " + currPlayer.num, width - (100 + streak.toString().length * 20), 20)
+            }
+
+            function showTrap(){
+                if(currPlayer.setTrap){
+                    ctx.fillStyle = "red"
+                    ctx.beginPath()
+                    ctx.fillRect(currPlayer.trap[0], currPlayer.trap[1], 5, 5)
+                    ctx.closePath()
+                }
             }
 
             function shapeGame(normRects, specRects){
@@ -189,6 +211,15 @@
                 ctx.fillText("Streak: " + streak, width - (100 + streak.toString().length * 20), height - 20)
             }
 
+            function showOtherTraps(){
+                for(let i in traps){
+                    ctx.fillStyle = "red"
+                    ctx.beginPath()
+                    ctx.fillRect(traps[i][0], traps[i][1], 5, 5)
+                    ctx.closePath()
+                }
+            }
+
 
             setInterval(function(){
                 ctx.clearRect(0,0,can.width,can.height)
@@ -198,11 +229,24 @@
                     shapeGame(normRects, specRects)
                 }
                 currPlayer.updatePosition()
+
+
+
+                for(let i in traps){
+                   if( Math.sqrt((currPlayer.x-traps[i][0])*(currPlayer.x-traps[i][0]) + (currPlayer.y-traps[i][1])*(currPlayer.y-traps[i][1])) < 20 ){
+                        streak = 0
+                   }
+                }
+
                 currPlayer.draw()
                 otherPlayersDraw()
+                showTrap()
+                showOtherTraps()
                 showLatency(latency)
                 showStreak(streak)
                 showPlayerNum()
+
+
                 socket.emit("myPosition", {
                     id: currPlayer.id,
                     x: currPlayer.x,
@@ -234,12 +278,9 @@
 
             //game
             socket.on("shapeOn", (data) => {
-                /*if(inside([currPlayer.x, currPlayer.y], shape)){
-                    streak += 1
-                }else{
-                    streak = 0
-                }
-                */
+               currPlayer.trapSet = false
+               currPlayer.trap = []
+               traps = []
                let gotin = false
                for(let i in normRects){
                    if(inRect(currPlayer.x, currPlayer.y, normRects[i][0], normRects[i][1], normRects[i][2])){
@@ -259,6 +300,11 @@
                 
                 normRects = data.normrecs
                 specRects = data.specrecs
+            })
+
+            socket.on("trapPlaced", (data) => {
+                console.log("places")
+                traps.push(data.trap)
             })
 
             socket.on("playerDisconnect", (data) => {
@@ -295,7 +341,10 @@
                         currPlayer.pressingLeft = true
                     }else if(evt.keyCode == 83){
                         currPlayer.pressingUp = true
+                    }else if(evt.keyCode == 32){
+                        currPlayer.setTrap()
                     }
+                    
                 }
             }
             document.addEventListener("keydown", keydown);

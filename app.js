@@ -72,6 +72,15 @@ io.sockets.on("connection", function(socket){
         }
     })
 
+    socket.on("trapSet", function(data){
+        for(let i in socketList){
+            let socket = socketList[i]
+            socket.emit("trapPlaced", {
+                trap: data.trap
+            })
+        }
+    })
+
 })
 
 setInterval(function(){
