@@ -256,7 +256,9 @@
             }, 1000/fps)
 
             setInterval(() => {
-                latency = time
+                if(time){
+                    latency = time
+                }
             }, 1000/2)
 
     
