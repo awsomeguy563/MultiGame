@@ -63,9 +63,12 @@ io.sockets.on("connection", function(socket){
 
     socket.on("sendMsg", function(data){
         let playerName = ("" + socket.id).slice(2,7)
+        if(data.user){
+            playerName = data.user
+        }
         for(let i in socketList){
             let socket = socketList[i]
-            socket.emit("addToChat", playerName + ": " + data)
+            socket.emit("addToChat", playerName + ": " + data.text)
         }
     })
 

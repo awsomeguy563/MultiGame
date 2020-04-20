@@ -12,11 +12,15 @@
 </head>
 <body>
     <div id="chat">
-        <div id="chat-text" style="width:200px;height:700px;overflow-y:scroll">
+        <div id="chat-text" style="width:300px;height:650px;overflow-y:scroll">
             <div>Hello!</div>
         </div>
         <form id="chat-form">
-            <input id="chat-input" type="text" style="width:200px"></input>
+            <input id="chat-input" type="text" style="width:300px"></input>
+        </form>
+        <form id="username-form">
+                Enter a username: 
+                <input id="username-input" type="text" style="width:100px"></input>
         </form>
    </div>
 
@@ -27,6 +31,9 @@
             let chatText = document.getElementById("chat-text")
             let chatForm = document.getElementById("chat-form")
             let chatInput= document.getElementById("chat-input")
+            let usernameForm = document.getElementById("username-form")
+            let usernameInput= document.getElementById("username-input")
+            let username;
             let can = document.getElementById("canvas")
             let ctx = can.getContext("2d")
             let width = can.width
@@ -221,8 +228,17 @@
 
             chatForm.onsubmit = function(e){
                 e.preventDefault()
-                socket.emit("sendMsg", chatInput.value)
+                socket.emit("sendMsg", {
+                    text: chatInput.value,
+                    user: username
+                })
                 chatInput.value = ""
+            }
+
+            usernameForm.onsubmit = function(e){
+                e.preventDefault()
+                username = usernameInput.value
+                usernameInput.value = ""
             }
 
             function keydown(evt){
