@@ -99,28 +99,21 @@ let width = 1000
 
 
 setInterval(function(){
-    let shape = []
-        shape.push([
-            Math.floor(Math.random() * (width/2)),
-            Math.floor(Math.random() * (height/2))
-        ])
-        shape.push([
-            Math.floor(Math.random() * (width/2) + (width/2)),
-            Math.floor(Math.random() * (height/2))
-        ])
-        shape.push([
-            Math.floor(Math.random() * (width/2) + (width/2)),
-            Math.floor(Math.random() * (height/2) + (height/2))
-        ])
-        shape.push([
-            Math.floor(Math.random() * (width/2)),
-            Math.floor(Math.random() * (height/2) + (height/2))
-        ])
-        for(let i in socketList){
-            let socket = socketList[i]
-            socket.emit("shapeOn", {
-                shape: shape,
-                game: true
-            })
-        }
-}, 2000)
+    let specrecs = []
+    let normrecs = []
+    specrecsnum = Math.floor(Math.random() * 4) + 1
+    normrecsnum = Math.floor(Math.random() * 4) + 1
+    for(let i =0; i < specrecsnum; i++){
+        specrecs.push([Math.random() * (width-50 - 50) + 50, Math.random() * (height-50 - 50) + 50, 50])
+    }
+    for(let i =0; i < normrecsnum; i++){
+        normrecs.push([Math.random() * (width-80 - 80) + 80, Math.random() * (height-80 - 80) + 80, 80])
+    }
+    for(let i in socketList){
+        let socket = socketList[i]
+        socket.emit("shapeOn", {
+            specrecs: specrecs,
+            normrecs: normrecs
+        })
+    }
+}, 3000)

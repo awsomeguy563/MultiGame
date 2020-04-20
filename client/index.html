@@ -62,25 +62,16 @@
             let latency = 0
 
             //game vars and helpers
-            let shape = []
+            let normRects = []
+            let specRects = []
             let streak = 0
             let randColor = '#'+Math.floor(Math.random()*16777215).toString(16);
             let randColor2 = '#'+Math.floor(Math.random()*16777215).toString(16);
-            function inside(point, vs) {
-                // ray-casting algorithm based on
-                // http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html
-                var x = point[0], y = point[1];
-                var inside = false;
-                for (var i = 0, j = vs.length - 1; i < vs.length; j = i++) {
-                    var xi = vs[i][0], yi = vs[i][1];
-                    var xj = vs[j][0], yj = vs[j][1];
+            function inRect (x, y, rx, ry, h) {
+                return rx <= x && x <= rx + h &&
+                    ry <= y && y <= ry + h;
+            }
 
-                    var intersect = ((yi > y) != (yj > y))
-                        && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
-                    if (intersect) inside = !inside;
-                }
-                return inside;
-            };
 
 
             class Player{
@@ -136,20 +127,27 @@
                 }
             }
 
-            function shapeGame(shape){
-                ctx.strokeStyle = randColor2
-                ctx.fillStyle = randColor
-                ctx.lineWidth = 10;
-                ctx.beginPath()
-                ctx.moveTo(shape[0][0],shape[0][1])
-                for(let i =1; i < 3; i++){
-                    ctx.lineTo(shape[i+1][0],shape[i+1][1])
+            function shapeGame(normRects, specRects){
+                for(let i in normRects){
+                    ctx.fillStyle = "brown"
+                    ctx.strokeStyle = "yellow";
+                    ctx.lineWidth = 5
+                    ctx.beginPath()
+                    ctx.rect(normRects[i][0],normRects[i][1],normRects[i][2],normRects[i][2])
                     ctx.stroke()
+                    ctx.closePath()
+                    ctx.fill()
                 }
-                ctx.lineTo(shape[0][0],shape[0][1])
-                ctx.stroke()
-                ctx.closePath()
-                ctx.fill()
+                for(let i in specRects){
+                    ctx.fillStyle = "green"
+                    ctx.strokeStyle = "yellow"
+                    ctx.lineWidth = 5
+                    ctx.beginPath()
+                    ctx.rect(specRects[i][0],specRects[i][1],specRects[i][2],specRects[i][2])
+                    ctx.stroke()
+                    ctx.closePath()
+                    ctx.fill()
+                }
             }
 
             
@@ -187,8 +185,8 @@
                 ctx.clearRect(0,0,can.width,can.height)
                 ctx.fillStyle = "black"
                 ctx.fillRect(0,0,width,height)
-                if(shape.length != 0){
-                    shapeGame(shape)
+                if(normRects.length != 0 && specRects.length != 0){
+                    shapeGame(normRects, specRects)
                 }
                 currPlayer.updatePosition()
                 currPlayer.draw()
@@ -226,14 +224,31 @@
 
             //game
             socket.on("shapeOn", (data) => {
-                randColor = '#'+Math.floor(Math.random()*16777215).toString(16);
-                randColor2 = '#'+Math.floor(Math.random()*16777215).toString(16); 
-                if(inside([currPlayer.x, currPlayer.y], shape)){
+                /*if(inside([currPlayer.x, currPlayer.y], shape)){
                     streak += 1
                 }else{
                     streak = 0
                 }
-                shape = data.shape
+                */
+               let gotin = false
+               for(let i in normRects){
+                   if(inRect(currPlayer.x, currPlayer.y, normRects[i][0], normRects[i][1], normRects[i][2])){
+                       streak += 1
+                       gotin = true
+                   }
+               }
+               for(let i in specRects){
+                   if(inRect(currPlayer.x, currPlayer.y, specRects[i][0], specRects[i][1], specRects[i][2])){
+                       streak += 5
+                       gotin = true
+                   }
+               }
+               if(!gotin){
+                   streak = 0
+               }
+                
+                normRects = data.normrecs
+                specRects = data.specrecs
             })
 
             socket.on("playerDisconnect", (data) => {
