@@ -120,4 +120,4 @@ setInterval(function(){
                 game: true
             })
         }
-}, 5000)
+}, 2000)
