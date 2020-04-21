@@ -29,7 +29,7 @@
         <div id="chat-text" style="width:200px;height:650px;overflow-y:scroll">
             <div style="color:grey"> >>Move with 'WASD'</div>
             <div style="color:grey"> >>Red squares = 1pt, Green squares = 5pts</div>
-            <div style="color:grey"> >>Set traps with spacebar, careful not to step on yours!</div>
+            <div style="color:grey"> >>Set traps with spacebar | Yours is purple, others is red</div>
             <div style="color:grey"> >>Try to get the highest streak!</div>
             <div style="color:grey"> >>ChatRoom: Type away!</div>
         </div>
@@ -152,7 +152,7 @@
 
             function showTrap(){
                 if(currPlayer.setTrap){
-                    ctx.fillStyle = "red"
+                    ctx.fillStyle = "purple"
                     ctx.beginPath()
                     ctx.fillRect(currPlayer.trap[0], currPlayer.trap[1], 10, 10)
                     ctx.closePath()
@@ -307,7 +307,14 @@
 
             socket.on("trapPlaced", (data) => {
                 console.log("places")
-                traps.push(data.trap)
+                if(currPlayer.trap.length != 0){
+                    if(data.trap[0] != currPlayer.trap[0] && data.trap[1] != currPlayer.trap[1]){
+                    traps.push(data.trap)
+                    }
+                }else{
+                    traps.push(data.trap)
+                }
+                
             })
 
             socket.on("playerDisconnect", (data) => {
